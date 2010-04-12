@@ -335,6 +335,14 @@ module DataMapper
           true
         end
 
+        # Adapters that support SQL SCHEMA components in names should 
+        # overwrite this to return true.
+        #
+        # @api private
+        def supports_schema?
+          false
+        end
+
         # Constructs SELECT statement for given query,
         #
         # @return [String] SELECT statement as a string
@@ -700,7 +708,16 @@ module DataMapper
 
         # @api private
         def quote_name(name)
-          "\"#{name[0, self.class::IDENTIFIER_MAX_LENGTH].gsub('"', '""')}\""
+          if supports_schema?
+            name.split('.').map!{|name_atom| quote_name_atom(name_atom)}.join('.')
+          else
+            quote_name_atom(name)
+          end
+        end
+
+        # @api private
+        def quote_name_atom(atom)
+          "\"#{atom[0, self.class::IDENTIFIER_MAX_LENGTH].gsub('"', '""')}\""
         end
       end #module SQL
 

@@ -12,6 +12,11 @@ module DataMapper
         def supports_returning?
           true
         end
+        
+        # @api private
+        def supports_schema?
+          true
+        end
       end #module SQL
 
       include SQL
